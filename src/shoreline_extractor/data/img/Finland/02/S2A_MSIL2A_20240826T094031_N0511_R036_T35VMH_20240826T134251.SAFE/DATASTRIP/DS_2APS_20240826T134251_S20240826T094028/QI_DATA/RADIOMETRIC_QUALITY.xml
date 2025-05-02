@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Earth_Explorer_File xmlns="http://gs2.esa.int/DATA_STRUCTURE/olqcReport">
+    <Earth_Explorer_Header>
+        <Fixed_Header>
+            <File_Name>RADIOMETRIC_QUALITY.xml</File_Name>
+            <File_Description>Report produced by OLQC-SC</File_Description>
+            <Notes></Notes>
+            <Mission>S2A</Mission>
+            <File_Class>OPER</File_Class>
+            <File_Type>REP_OLQCPA</File_Type>
+            <Validity_Period>
+                <Validity_Start>UTC=2024-07-23T03:00:00</Validity_Start>
+                <Validity_Stop>UTC=2100-01-01T00:00:00</Validity_Stop>
+            </Validity_Period>
+            <File_Version>2</File_Version>
+            <Source>
+                <System>OLQC-SC</System>
+                <Creator>OLQC-SC</Creator>
+                <Creator_Version>06.03.00</Creator_Version>
+                <Creation_Date>UTC=2024-08-26T14:37:14</Creation_Date>
+            </Source>
+        </Fixed_Header>
+    </Earth_Explorer_Header>
+    <Data_Block type="xml">
+        <report gippVersion="1.0" globalStatus="PASSED" date="2024-08-26T14:37:14.625Z">
+            <checkList>
+                <parentID>S2A_OPER_GIP_OLQCPA_MPC__20240717T000043_V20240723T030000</parentID>
+                <name>RADIOMETRIC_QUALITY</name>
+                <version>1.0</version>
+                <item url="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/" className="PDI Level 2A Datastrip Folder" name="S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11" class="http://www.esa.int/s2#pdi_level_2a_datastrip_container"/>
+                <check>
+                    <inspection creation="2024-08-26T14:37:14.562Z" duration="52" execution="2024-08-26T14:37:14.570Z" id="EqualizationFlag" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check EQUALIZATION_MODE " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Equalization Mode is set to TRUE</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:15.646Z" duration="0" execution="2024-08-26T14:37:15.665Z" id="Radiometric_Quality_Indicators_Absolute" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check on the Radiometric Quality Indicators : Absolute Calibration Accuracy. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Absolute calibration accuracy is correct.</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:17.765Z" duration="31" execution="2024-08-26T14:37:17.770Z" id="QuantificationValueAOT" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check AOT QUANTIFICATION_VALUE " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">AOT QUANTIFICATION_VALUE is OK</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:17.802Z" duration="1" execution="2024-08-26T14:37:17.815Z" id="QuantificationValueBOA" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check BOA QUANTIFICATION_VALUE " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">BOA QUANTIFICATION_VALUE is OK</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:17.817Z" duration="0" execution="2024-08-26T14:37:17.831Z" id="Radiometric_Quality_Indicators_Cross_Band" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check on the Radiometric Quality Indicators : Cross Band Calibration Accuracy. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Cross band calibration accuracy is correct.</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:17.833Z" duration="1" execution="2024-08-26T14:37:17.838Z" id="QuantificationValueWVP" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check WVP QUANTIFICATION_VALUE " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">WVP QUANTIFICATION_VALUE is OK</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:17.840Z" duration="7" execution="2024-08-26T14:37:17.865Z" id="IntegrationTime" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check INTEGRATION_TIME " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">INTEGRATION_TIME is OK</message>
+                </check>
+                <check>
+                    <inspection creation="2024-08-26T14:37:17.887Z" duration="7" execution="2024-08-26T14:37:17.893Z" id="Radiometric_Quality_Indicators_Multi_Temporal" item="MTD_DS.xml" itemURL="/mnt/nfs-l2-03/l2-processing/processing-id-60849-2024-08-26-13-42-03/TaskTable_20240826T134203/FORMAT_METADATA_DS_L2A_ADAPT/output/PDI_DS/S2A_OPER_MSI_L2A_DS_2APS_20240826T134251_S20240826T094028_N05.11/MTD_DS.xml" name="Check on the Radiometric Quality Indicators : Multi-Temporal Calibration Accuracy. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Multi-temporal calibration accuracy is correct.</message>
+                </check>
+            </checkList>
+        </report>
+    </Data_Block>
+</Earth_Explorer_File>

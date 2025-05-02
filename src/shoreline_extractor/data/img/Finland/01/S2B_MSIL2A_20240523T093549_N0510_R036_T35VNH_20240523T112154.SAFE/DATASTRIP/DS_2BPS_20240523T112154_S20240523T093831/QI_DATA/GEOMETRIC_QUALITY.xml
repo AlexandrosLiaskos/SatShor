@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Earth_Explorer_File xmlns="http://gs2.esa.int/DATA_STRUCTURE/olqcReport">
+    <Earth_Explorer_Header>
+        <Fixed_Header>
+            <File_Name>GEOMETRIC_QUALITY.xml</File_Name>
+            <File_Description>Report produced by OLQC-SC</File_Description>
+            <Notes></Notes>
+            <Mission>S2B</Mission>
+            <File_Class>OPER</File_Class>
+            <File_Type>REP_OLQCPA</File_Type>
+            <Validity_Period>
+                <Validity_Start>UTC=2022-08-30T00:25:00</Validity_Start>
+                <Validity_Stop>UTC=2100-01-01T00:00:00</Validity_Stop>
+            </Validity_Period>
+            <File_Version>2</File_Version>
+            <Source>
+                <System>OLQC-SC</System>
+                <Creator>OLQC-SC</Creator>
+                <Creator_Version>06.02.00</Creator_Version>
+                <Creation_Date>UTC=2024-05-23T11:22:05</Creation_Date>
+            </Source>
+        </Fixed_Header>
+    </Earth_Explorer_Header>
+    <Data_Block type="xml">
+        <report gippVersion="1.0" globalStatus="PASSED" date="2024-05-23T11:22:05.587Z">
+            <checkList>
+                <parentID>S2B_OPER_GIP_OLQCPA_MPC__20220715T000042_V20220830T002500</parentID>
+                <name>GEOMETRIC_QUALITY</name>
+                <version>1.0</version>
+                <item url="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/" className="PDI Level 2A Datastrip Folder" name="S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10" class="http://www.esa.int/s2#pdi_level_2a_datastrip_container"/>
+                <check>
+                    <inspection creation="2024-05-23T11:22:05.570Z" duration="1" execution="2024-05-23T11:22:05.584Z" id="Geometric_Refining_Vnir_Swir_Registration" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check of the correctness of the Geometric Refining: VNIR/SWIR Registration. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">VNIR / SWIR bands have not been registered.</message>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:05.588Z" duration="900" execution="2024-05-23T11:22:05.596Z" id="Attitude_Quality_Indicator_Raw" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check the admissibility of Raw Attitude Quality Indicator. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">No wrong raw attitude indicators were found.</message>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:08.266Z" duration="6" execution="2024-05-23T11:22:08.280Z" id="Planimetric_Stability" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check the planimetric stability value  " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Planimetric stability is valid (3.0&lt;5.0) </message>
+                    <extraValues>
+                        <value name="VALUE">3.0</value>
+                        <value name="EXPECTED">5.0</value>
+                    </extraValues>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:08.288Z" duration="4" execution="2024-05-23T11:22:08.302Z" id="Ephemeris_Quality" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check the ephemeris quality value. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Ephemeris quality is valid (3.0&lt;=20.0) </message>
+                    <extraValues>
+                        <value name="VALUE">3.0</value>
+                        <value name="EXPECTED">20.0</value>
+                    </extraValues>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:08.308Z" duration="1139" execution="2024-05-23T11:22:08.321Z" id="Attitude_Quality_Indicator_Corrected" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check the admissibility of Corrected Attitude Quality Indicator. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">No wrong corrected attitude indicators were found.</message>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:09.462Z" duration="3" execution="2024-05-23T11:22:09.468Z" id="Absolute_Location_Value" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check the absolute Location value. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Absolute location is valid (20.0&lt;30.0) </message>
+                    <extraValues>
+                        <value name="VALUE">20.0</value>
+                        <value name="EXPECTED">30.0</value>
+                    </extraValues>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:09.497Z" duration="1" execution="2024-05-23T11:22:09.510Z" id="Geometric_Refining_Spatio_Residual_Histograms" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check of the correctness of the Geometric Refining: Spatio Residual Histograms. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Geometric Spatio Residual Histograms not computed.</message>
+                </check>
+                <check>
+                    <inspection creation="2024-05-23T11:22:09.512Z" duration="1" execution="2024-05-23T11:22:09.519Z" id="Geometric_Refining_Image_Refining" item="MTD_DS.xml" itemURL="/mnt/local/l2ads/work/683f7d33-66f3-419b-aed5-d0da09705d19/work/tmp_l2_ds_20240523112147/work/Sen2Core_tmp_ds_20240523112149/DS/S2B_OPER_MSI_L2A_DS_2BPS_20240523T112154_S20240523T093831_N05.10/MTD_DS.xml" name="Check of the correctness of the Geometric Refining: Image Refining. " priority="5" processingStatus="done" status="PASSED"/>
+                    <message contentType="text/plain">Geometric image refining is correct.</message>
+                    <extraValues>
+                        <value name="X_MEAN">0.019335</value>
+                        <value name="Y_MEAN">0.000418</value>
+                        <value name="X_STDV">4.293745</value>
+                        <value name="Y_STDV">5.481888</value>
+                    </extraValues>
+                </check>
+            </checkList>
+        </report>
+    </Data_Block>
+</Earth_Explorer_File>

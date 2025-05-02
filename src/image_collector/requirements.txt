@@ -1,0 +1,6 @@
+requests
+python-dotenv
+geojson
+shapely
+rich
+pandas

@@ -1,0 +1,13 @@
+# General Python
+*.jp2
+*__pycache__/
+
+# Environment
+*lib/
+*venv/
+*geojson
+*logs/
+backup/
+.mypy_cache/
+.ruffus_cache/
+utils/
