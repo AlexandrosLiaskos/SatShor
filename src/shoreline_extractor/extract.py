@@ -78,7 +78,7 @@ def load_aoi(aoi_path):
             aoi_geom = aoi_gdf.geometry.union_all()
         except AttributeError:
             logging.warning(
-                "'.union_all()' method not found, trying older '.unary_union' attribute."
+                "''.unary_union' alternative."
             )
             try:
                 aoi_geom = aoi_gdf.geometry.unary_union
