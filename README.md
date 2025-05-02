@@ -16,7 +16,7 @@ SatShor consists of two main components:
 ![image](https://github.com/user-attachments/assets/da0ddf2d-0fbf-4f99-9e89-c9825d05c5b7)
 ![image](https://github.com/user-attachments/assets/2dd2a27d-85dc-4d86-bc9f-cbc1a5931b20)
 ![image](https://github.com/user-attachments/assets/fa2bf99c-969e-425c-a124-cb511153f72d)
-
+![image](https://github.com/user-attachments/assets/86229a17-9ff5-4807-ab89-180cbaa6a34b)
 
 ## Features
 
