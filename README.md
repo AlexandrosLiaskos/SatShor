@@ -235,7 +235,8 @@ Additional documentation is available in the `docs` directory:
 - [OData API Documentation](docs/OData.md): Details on the Copernicus Data Space Ecosystem API
 - [Directory Standards](docs/Directory_Standards.md): Information on the project's directory structure
 - [AOI Drawing Guide](docs/AOI_Drawing_Guide.md): Guide for creating compatible Area of Interest files
-- [Shoreline Extractor Functions](docs/shoreline_extractor_functions.md): Detailed explanation of the shoreline extraction algorithms
+- [Shoreline Extractor Functions](src/shoreline-extractor/README.md): Detailed explanation of the shoreline extraction algorithms
+- [Image Collectr](src/image-collector/README.md): Image Collector's README
 
 ## Future Enhancements
 
