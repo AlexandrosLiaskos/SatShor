@@ -96,7 +96,7 @@ The image collector searches for and downloads Sentinel-2 imagery based on your 
 ```bash
 python src/image_collector/collector.py --aoi path/to/your/aoi.geojson --start-date YYYY-MM-DD --end-date YYYY-MM-DD
 ```
-
+```bash
 usage: collector.py [-h]
                     [--aoi AOI]
                     [--start-date START_DATE]
@@ -151,6 +151,7 @@ options:
                to. Default: src/sho
                reline_extractor/dat
                a/img
+```
 
 ### Shoreline Extractor
 
@@ -160,6 +161,7 @@ The shoreline extractor processes Sentinel-2 Band 8 imagery to extract shoreline
 python src/shoreline_extractor/extract.py --b8_input_file path/to/B08_file.jp2 --aoi_path path/to/aoi.geojson
 ```
 
+```bash
 usage: extract.py [-h]
                   [--b8_input_file B8_INPUT_FILE]
                   [--aoi_path AOI_PATH]
@@ -224,6 +226,7 @@ options:
                level for console
                output. (default:
                INFO)
+```
 
 ## Documentation
 
