@@ -7,7 +7,7 @@ A toolkit for extracting shorelines from Sentinel-2 satellite imagery. It provid
 SatShor consists of two main components:
 
 1. **Image Collector**: Searches and downloads Sentinel-2 satellite imagery from the Copernicus Data Space Ecosystem (CDSE) based on user-defined criteria (Start-End Date, Cloud %, AoI %).
-2. **Shoreline Extractor**: Processes Sentinel-2 Band 8 (NIR) imagery to extract accurate shorelines using cikit-image's minimum thresholding and marching squares subpixel refinement.
+2. **Shoreline Extractor**: Processes Sentinel-2 Band 8 (NIR) imagery to extract accurate shorelines using scikit-image's minimum thresholding and marching squares subpixel refinement.
 
 ## Screenshots
 
