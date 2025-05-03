@@ -20,6 +20,18 @@ SatShor consists of two main components:
 
 ## Features
 
+### !! Upcoming
+
+- Image Collector:
+  - Automatically collect images by covering compact sets with subsets.
+  - Optimize for the best available images by:
+    - Area coverage.
+    - Minimum cloud percentage using the greedy method.
+
+- Memory Enhancements:
+  - Improve memory efficiency in the Shoreline Extractor.
+
+
 ### Image Collector
 - Search for Sentinel-2 scenes intersecting a user-defined Area of Interest (AOI)
 - Filter scenes by date range and cloud cover percentage
