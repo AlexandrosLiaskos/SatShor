@@ -23,10 +23,7 @@ SatShor consists of two main components:
 ### !! Upcoming
 
 - Image Collector:
-  - Automatically collect images by covering compact sets with subsets.
-  - Optimize for the best available images by:
-    - Area coverage.
-    - Minimum cloud percentage using the greedy method.
+  - Automatically collect images by completely covering compact sets with subsets with greedy method optimized for area of coverage and minimum cloud percentage.
 
 - Memory Enhancements:
   - Improve memory efficiency in the Shoreline Extractor.
