@@ -11,3 +11,10 @@ backup/
 .mypy_cache/
 .ruffus_cache/
 utils/
+
+# Scheduler-related
+src/image_collector/logs/*.log
+src/image_collector/config.yaml
+*.pid
+*.db
+scheduler.db

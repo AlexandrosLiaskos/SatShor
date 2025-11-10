@@ -4,3 +4,7 @@ geojson
 shapely
 rich
 pandas
+geopandas
+APScheduler>=3.11.0
+PyYAML>=6.0
+python-daemon>=3.0

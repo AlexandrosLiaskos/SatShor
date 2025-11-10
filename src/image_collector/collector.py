@@ -214,6 +214,7 @@ def build_odata_query(
         "$filter": final_filter,
         "$expand": "Attributes",
         "$orderby": "ContentDate/Start desc",
+        "$select": "ContentLength",
     }
     query_string_parts = []
     odata_filter_safe_chars = "()'=;:/,"
@@ -358,6 +359,13 @@ def process_products(
     access_token: str,
     min_aoi_coverage: float = 0,
     output_dir: str = ".",
+    auto_select_strategy: str = "interactive",
+    max_products: int = 5,
+    min_coverage_fraction: float = 0.99,
+    grid_spacing_meters: Optional[float] = None,
+    solver_timeout: int = 300,
+    coverage_cloud_weight: float = 0.3,
+    coverage_quality_weight: float = 0.7,
 ) -> list[dict[str, Any]]:
     console = Console()
     logging.info(f"Processing {len(products)} potential products.")
@@ -436,6 +444,7 @@ def process_products(
     for product in products:
         product_name = product["Name"]
         product_odata_id = product["Id"]
+        content_length = product.get("ContentLength")
         attributes = {
             attr["Name"]: attr["Value"] for attr in product.get("Attributes", [])
         }
@@ -465,6 +474,7 @@ def process_products(
 
         aoi_coverage_percent = None
         product_geom = None
+        product_geom_proj = None  # Initialize for coverage optimization
         footprint_wkt = product.get("Footprint")
 
         if footprint_wkt:
@@ -493,7 +503,7 @@ def process_products(
                     if aoi_area_m2 > 0:
                         try:
                             product_gdf_proj = product_gdf.to_crs(target_crs)
-                            product_geom_proj = product_gdf_proj.geometry.iloc[0]
+                            product_geom_proj = product_gdf_proj.geometry.iloc[0]  # Store for coverage optimization
                             intersection_geom_proj = aoi_geom_proj.intersection(product_geom_proj)
                             intersection_area_m2 = intersection_geom_proj.area
                             aoi_coverage_percent = (intersection_area_m2 / aoi_area_m2) * 100
@@ -505,12 +515,15 @@ def process_products(
                             if processed_count < 5:
                                 crs_name = target_crs.name
                                 crs_id = target_crs.to_epsg() if target_crs.is_projected else "non-projected"
+                                content_length_mb = content_length / (1024 * 1024) if content_length else None
+                                content_length_info = f" ({content_length_mb:.2f} MB)" if content_length_mb else " (N/A)"
                                 log_msg = (
                                     f"Prod {product_odata_id[:8]} Areas (CRS: {crs_id} - {crs_name}):\n"
                                     + f"  AOI Projected Area  : {aoi_area_m2:,.2f} m²\n"
                                     + f"  Prod Projected Area : {product_geom_proj.area:,.2f} m²\n"
                                     + f"  Intersection Area   : {intersection_area_m2:,.2f} m²\n"
-                                    + f"  Coverage Percentage : {aoi_coverage_percent:.2f}%"
+                                    + f"  Coverage Percentage : {aoi_coverage_percent:.2f}%\n"
+                                    + f"  Content Length      : {content_length_info}"
                                 )
                                 logging.debug(log_msg)
                         except Exception as proj_err:
@@ -633,19 +646,38 @@ def process_products(
             "cloud_cover": cloud_cover,
             "aoi_coverage": aoi_coverage_percent,
             "days_from_end": days_from_end,
+            "content_length": content_length,
+            "footprint_geom_proj": product_geom_proj,  # Store for coverage optimization
         }
         processed_results.append(processed_data)
         product_map[display_id_counter] = product
         display_id_counter += 1
         processed_count += 1
     logging.info(f"Finished processing {len(processed_results)} products for coverage.")
-    filtered_results = [
+    
+    # Size-based filtering (600 MB threshold)
+    size_threshold = 628145152  # 600 MB in bytes
+    size_filtered_results = [
         p
         for p in processed_results
+        if p["content_length"] is not None
+        and p["content_length"] > 0
+        and p["content_length"] >= size_threshold
+    ]
+    filtered_by_size_count = len(processed_results) - len(size_filtered_results)
+    logging.info(
+        f"Filtered out {filtered_by_size_count} products with ContentLength < 600 MB (628145152 bytes) or missing/zero size."
+    )
+    logging.info(f"Remaining products after size filter: {len(size_filtered_results)}")
+    
+    # AOI coverage filtering
+    filtered_results = [
+        p
+        for p in size_filtered_results
         if p["aoi_coverage"] is not None and p["aoi_coverage"] >= min_aoi_coverage
     ]
     logging.info(
-        f"Filtered down to {len(filtered_results)} products based on min_aoi_coverage >= {min_aoi_coverage}%."
+        f"Filtered down to {len(filtered_results)} products based on min_aoi_coverage >= {min_aoi_coverage}% (from {len(size_filtered_results)} after size filtering)."
     )
     filtered_product_map = {}
     filtered_id_counter = 1
@@ -680,6 +712,7 @@ def process_products(
     table.add_column("Sensing Date", style="dim", justify="center")
     table.add_column("Clouds %", justify="center")
     table.add_column("AoI %", justify="center")
+    table.add_column("Size", justify="right", width=10)
 
     def get_cloud_style(cloud_cover):
         if cloud_cover is None:
@@ -722,6 +755,7 @@ def process_products(
         cloud_cover = result.get("cloud_cover")
         aoi_coverage_percent = result.get("aoi_coverage")
         days_diff = result.get("days_from_end", None)
+        content_length = result.get("content_length")
         cloud_style = get_cloud_style(cloud_cover)
         aoi_style = get_aoi_coverage_style(aoi_coverage_percent)
         date_recency_style = get_date_recency_style(days_diff)
@@ -735,11 +769,17 @@ def process_products(
             if aoi_coverage_percent is not None
             else "[dim]N/A[/]"
         )
+        size_str = (
+            decimal(content_length)
+            if content_length is not None and content_length > 0
+            else "[dim]N/A[/]"
+        )
         table.add_row(
             str(display_id_counter),
             f"[{date_recency_style}]{sensing_date_str}[/]",
             cloud_str,
             aoi_str,
+            size_str,
         )
         display_id_counter += 1
     cloud_legend_text = (
@@ -784,77 +824,194 @@ def process_products(
     console.print(legend_columns)
     console.print(Rule(style="blue"))
     if product_map:
-        console.print(Rule("[bold cyan]Select Product for Download[/]"))
-        while True:
-            try:
-                choices = [str(k) for k in product_map.keys()] + ["q"]
-                selected_id_str = Prompt.ask(
-                    "Enter the [bold yellow]ID[/] of the product to download (or 'q' to quit)",
-                    choices=choices,
-                )
-                if selected_id_str.lower() == "q":
-                    console.print("Exiting download selection.")
-                    break
-                selected_id = int(selected_id_str)
-                if selected_id in product_map:
-                    selected_product = product_map[selected_id]
-                    selected_product_name = selected_product["Name"]
-                    selected_product_odata_id = selected_product["Id"]
-                    selected_cloud_cover = selected_product.get("cloud_cover_float")
-                    safe_dir_path = pathlib.Path(output_dir) / selected_product_name
-                    metadata_file_path = safe_dir_path / "metadata.json"
-                    if safe_dir_path.is_dir():
-                        console.print(
-                            f"[green]Product '{selected_product_name}' already exists locally. Skipping download.[/green]"
-                        )
-                    else:
-                        try:
-                            console.print(
-                                f"[cyan]Initiating download for {selected_product_name}...[/cyan]"
-                            )
-                            download_product(
-                                product_odata_id,
-                                product_name=selected_product_name,
-                                access_token=access_token,
-                                output_dir=output_dir,
-                                node_path=None,
-                            )
-                            console.print(
-                                f"[green]Download call for {selected_product_name} completed.[/green]"
-                            )
-                        except Exception as e:
-                            console.print(
-                                f"[red]Error during download initiation for {selected_product_name}:[/red] {e}"
-                            )
-                            logging.error(
-                                f"Exception during download call for {selected_product_name}: {e}",
-                                exc_info=True,
-                            )
-                            continue
+        # Check if using auto-select strategy
+        if auto_select_strategy != "interactive":
+            # Import auto-select function
+            from collection_core import auto_select_products
+            
+            console.print(f"[cyan]Using auto-select strategy: {auto_select_strategy}[/cyan]")
+            
+            # Convert processed_results to format expected by auto_select_products
+            auto_select_input = []
+            for result in processed_results:
+                # Find corresponding product from product_map
+                product_name = result["name"]
+                product_obj = None
+                for _, prod in product_map.items():
+                    if prod["Name"] == product_name:
+                        product_obj = prod
+                        break
+                
+                if product_obj:
+                    auto_select_input.append({
+                        "Name": product_name,
+                        "Id": product_obj["Id"],
+                        "cloud_cover_float": result.get("cloud_cover", 0.0) if result.get("cloud_cover") is not None else 0.0,
+                        "aoi_coverage_pct": result.get("aoi_coverage", 0.0) if result.get("aoi_coverage") is not None else 0.0,
+                        "date_diff_days": result.get("days_from_end", 999999),
+                        "sensing_date": result.get("sensing_date"),
+                        "ContentLength": result.get("content_length"),
+                        "footprint_geom_proj": result.get("footprint_geom_proj"),
+                    })
+            
+            # Select products automatically
+            selected_products = auto_select_products(
+                processed_products=auto_select_input,
+                strategy=auto_select_strategy,
+                max_products=max_products,
+                quality_threshold=0.7,
+                aoi_weight=0.4,
+                cloud_weight=0.4,
+                recency_weight=0.2,
+                aoi_geom=aoi_geom_proj,
+                aoi_area_m2=aoi_area_m2,
+                target_crs=target_crs,
+                min_coverage_fraction=min_coverage_fraction,
+                grid_spacing_meters=grid_spacing_meters,
+                solver_timeout=solver_timeout,
+                coverage_cloud_weight=coverage_cloud_weight,
+                coverage_quality_weight=coverage_quality_weight,
+            )
+            
+            console.print(f"[green]Auto-selected {len(selected_products)} products for download[/green]")
+            
+            # Download selected products
+            for product in selected_products:
+                selected_product_name = product["Name"]
+                selected_product_odata_id = product["Id"]
+                selected_cloud_cover = product.get("cloud_cover_float")
+                quality_score = product.get("quality_score", 0.0)
+                
+                console.print(f"[cyan]Processing: {selected_product_name} (quality score: {quality_score:.3f})[/cyan]")
+                
+                safe_dir_path = pathlib.Path(output_dir) / selected_product_name
+                metadata_file_path = safe_dir_path / "metadata.json"
+                
+                if safe_dir_path.is_dir():
+                    console.print(
+                        f"[green]Product '{selected_product_name}' already exists locally. Skipping download.[/green]"
+                    )
+                else:
                     try:
-                        safe_dir_path.mkdir(parents=True, exist_ok=True)
-                        metadata_to_save = {
-                            "product_name": selected_product_name,
-                            "odata_id": selected_product_odata_id,
-                            "cloud_cover_percentage": selected_cloud_cover,
-                            "retrieved_at": datetime.now(timezone.utc).isoformat(),
-                        }
-                        with open(metadata_file_path, "w") as f:
-                            json.dump(metadata_to_save, f, indent=4)
                         console.print(
-                            f"[blue]Saved metadata to {metadata_file_path}[/blue]"
+                            f"[cyan]Downloading {selected_product_name}...[/cyan]"
+                        )
+                        download_product(
+                            selected_product_odata_id,
+                            product_name=selected_product_name,
+                            access_token=access_token,
+                            output_dir=output_dir,
+                            node_path=None,
+                        )
+                        console.print(
+                            f"[green]Download completed for {selected_product_name}.[/green]"
                         )
                     except Exception as e:
                         console.print(
-                            f"[red]Error saving metadata file for {selected_product_name}:[/red] {e}"
+                            f"[red]Error during download for {selected_product_name}:[/red] {e}"
                         )
                         logging.error(
-                            f"Failed to save metadata for {selected_product_name}: {e}",
+                            f"Exception during download for {selected_product_name}: {e}",
                             exc_info=True,
                         )
-            except KeyboardInterrupt:
-                console.print("\nDownload selection cancelled by user.")
-                break
+                        continue
+                
+                try:
+                    safe_dir_path.mkdir(parents=True, exist_ok=True)
+                    metadata_to_save = {
+                        "product_name": selected_product_name,
+                        "odata_id": selected_product_odata_id,
+                        "cloud_cover_percentage": selected_cloud_cover,
+                        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+                        "quality_score": quality_score,
+                        "aoi_coverage_percentage": product.get("aoi_coverage_pct", 0.0),
+                    }
+                    with open(metadata_file_path, "w") as f:
+                        json.dump(metadata_to_save, f, indent=4)
+                    console.print(
+                        f"[blue]Saved metadata to {metadata_file_path}[/blue]"
+                    )
+                except Exception as e:
+                    console.print(
+                        f"[red]Error saving metadata file for {selected_product_name}:[/red] {e}"
+                    )
+                    logging.error(
+                        f"Failed to save metadata for {selected_product_name}: {e}",
+                        exc_info=True,
+                    )
+        else:
+            # Interactive mode
+            console.print(Rule("[bold cyan]Select Product for Download[/]"))
+            while True:
+                try:
+                    choices = [str(k) for k in product_map.keys()] + ["q"]
+                    selected_id_str = Prompt.ask(
+                        "Enter the [bold yellow]ID[/] of the product to download (or 'q' to quit)",
+                        choices=choices,
+                    )
+                    if selected_id_str.lower() == "q":
+                        console.print("Exiting download selection.")
+                        break
+                    selected_id = int(selected_id_str)
+                    if selected_id in product_map:
+                        selected_product = product_map[selected_id]
+                        selected_product_name = selected_product["Name"]
+                        selected_product_odata_id = selected_product["Id"]
+                        selected_cloud_cover = selected_product.get("cloud_cover_float")
+                        safe_dir_path = pathlib.Path(output_dir) / selected_product_name
+                        metadata_file_path = safe_dir_path / "metadata.json"
+                        if safe_dir_path.is_dir():
+                            console.print(
+                                f"[green]Product '{selected_product_name}' already exists locally. Skipping download.[/green]"
+                            )
+                        else:
+                            try:
+                                console.print(
+                                    f"[cyan]Initiating download for {selected_product_name}...[/cyan]"
+                                )
+                                download_product(
+                                    product_odata_id,
+                                    product_name=selected_product_name,
+                                    access_token=access_token,
+                                    output_dir=output_dir,
+                                    node_path=None,
+                                )
+                                console.print(
+                                    f"[green]Download call for {selected_product_name} completed.[/green]"
+                                )
+                            except Exception as e:
+                                console.print(
+                                    f"[red]Error during download initiation for {selected_product_name}:[/red] {e}"
+                                )
+                                logging.error(
+                                    f"Exception during download call for {selected_product_name}: {e}",
+                                    exc_info=True,
+                                )
+                                continue
+                        try:
+                            safe_dir_path.mkdir(parents=True, exist_ok=True)
+                            metadata_to_save = {
+                                "product_name": selected_product_name,
+                                "odata_id": selected_product_odata_id,
+                                "cloud_cover_percentage": selected_cloud_cover,
+                                "retrieved_at": datetime.now(timezone.utc).isoformat(),
+                            }
+                            with open(metadata_file_path, "w") as f:
+                                json.dump(metadata_to_save, f, indent=4)
+                            console.print(
+                                f"[blue]Saved metadata to {metadata_file_path}[/blue]"
+                            )
+                        except Exception as e:
+                            console.print(
+                                f"[red]Error saving metadata file for {selected_product_name}:[/red] {e}"
+                            )
+                            logging.error(
+                                f"Failed to save metadata for {selected_product_name}: {e}",
+                                exc_info=True,
+                            )
+                except KeyboardInterrupt:
+                    console.print("\nDownload selection cancelled by user.")
+                    break
     else:
         console.print(
             "[yellow]No products met the criteria for display/download.[/yellow]"
@@ -1088,6 +1245,51 @@ if __name__ == "__main__":
         default=os.path.expanduser("~/SatShor/src/shoreline_extractor/data/img"),
         help="Directory to download products to. Default: ~/SatShor/src/shoreline_extractor/data/img",
     )
+    parser.add_argument(
+        "--auto-select",
+        choices=["interactive", "best_n", "all_above_threshold", "best_per_week", "coverage_greedy", "coverage_optimal"],
+        default="interactive",
+        help="Product selection strategy. 'interactive' for manual selection, "
+             "'best_n' for top N by quality, 'all_above_threshold' for quality threshold, "
+             "'best_per_week' for best per week, 'coverage_greedy' for fast near-optimal coverage, "
+             "'coverage_optimal' for globally optimal coverage (requires OR-Tools). Default: interactive",
+    )
+    parser.add_argument(
+        "--max-products",
+        type=int,
+        default=5,
+        help="Maximum products to download for auto-select strategies. Default: 5",
+    )
+    parser.add_argument(
+        "--min-coverage",
+        type=float,
+        default=0.99,
+        help="Minimum coverage fraction for coverage optimization strategies (0.0-1.0). Default: 0.99",
+    )
+    parser.add_argument(
+        "--grid-spacing",
+        type=float,
+        default=None,
+        help="Grid spacing in meters for coverage sampling (None = auto-calculate). Default: None",
+    )
+    parser.add_argument(
+        "--solver-timeout",
+        type=int,
+        default=300,
+        help="Time limit in seconds for MILP solver (coverage_optimal only). Default: 300",
+    )
+    parser.add_argument(
+        "--coverage-cloud-weight",
+        type=float,
+        default=0.3,
+        help="Weight for cloud cover in coverage cost function (0.0-1.0). Default: 0.3",
+    )
+    parser.add_argument(
+        "--coverage-quality-weight",
+        type=float,
+        default=0.7,
+        help="Weight for quality in coverage cost function (0.0-1.0). Default: 0.7",
+    )
     args = parser.parse_args()
     output_path = pathlib.Path(args.output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -1218,5 +1420,12 @@ if __name__ == "__main__":
             access_token,
             min_aoi_coverage=args.min_aoi,
             output_dir=args.output_dir,
+            auto_select_strategy=args.auto_select,
+            max_products=args.max_products,
+            min_coverage_fraction=args.min_coverage,
+            grid_spacing_meters=args.grid_spacing,
+            solver_timeout=args.solver_timeout,
+            coverage_cloud_weight=args.coverage_cloud_weight,
+            coverage_quality_weight=args.coverage_quality_weight,
         )
     console.print(Rule("[bold magenta]Collection Complete[/]"))

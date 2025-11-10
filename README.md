@@ -6,7 +6,7 @@ A toolkit for extracting shorelines from Sentinel-2 satellite imagery. It provid
 
 SatShor consists of two main components:
 
-1. **Image Collector**: Searches and downloads Sentinel-2 satellite imagery from the Copernicus Data Space Ecosystem (CDSE) based on user-defined criteria (Start-End Date, Cloud %, AoI %).
+1. **Image Collector**: Searches and downloads Sentinel-2 satellite imagery from the Copernicus Data Space Ecosystem (CDSE) based on user-defined criteria (Start-End Date, Cloud %, AoI %), with support for both manual and automatic scheduled collection.
 2. **Shoreline Extractor**: Processes Sentinel-2 Band 8 (NIR) imagery to extract accurate shorelines using scikit-image's minimum thresholding and marching squares subpixel refinement.
 
 ## Screenshots
@@ -20,22 +20,43 @@ SatShor consists of two main components:
 
 ## Features
 
-### !! Upcoming
-
-- Image Collector:
-  - Automatically collect images by completely covering compact sets with subsets with greedy method optimized for area of coverage and minimum cloud percentage.
-
-- Memory Enhancements:
-  - Improve memory efficiency in the Shoreline Extractor.
-
-
 ### Image Collector
 - Search for Sentinel-2 scenes intersecting a user-defined Area of Interest (AOI)
 - Filter scenes by date range and cloud cover percentage
 - Calculate AOI coverage for each scene
 - Interactive selection of scenes to download
 - Automatic download and extraction of selected scenes
+- **Automatic periodic downloads** (yearly, monthly, weekly, or custom intervals)
+- **Configurable auto-selection strategies** for unattended operation
+- **Geometric coverage optimization** for complete area coverage with minimal images (OCAS)
+- **Scheduler daemon** for long-running automated collection
 - Rich console interface with progress indicators
+
+### Optimal Coverage Acquisition System (OCAS)
+
+OCAS solves the **Satellite Image Mosaic Selection Problem (SIMSP)** - a geometric set cover optimization problem. Unlike quality-based selection strategies that pick the best individual images, OCAS selects the minimal set of images needed to completely cover your area of interest.
+
+**Key Differences:**
+- **Quality-based selection**: Prioritizes best individual images by cloud cover, recency, and AOI coverage
+- **Coverage-based selection (OCAS)**: Guarantees complete area coverage with minimal number of images
+
+**Two Approaches:**
+- **`coverage_greedy`**: Fast greedy heuristic providing near-optimal solutions (typically within 10-20% of optimal)
+  - Suitable for large areas (>1000 km²)
+  - Fast execution time
+  - Good for time-sensitive operations
+
+- **`coverage_optimal`**: MILP-based globally optimal solver using OR-Tools
+  - Guarantees minimal image count for complete coverage
+  - Best for small-medium areas (<500 km²)
+  - May be slow for large problems (>100 candidates)
+  - **Requires optional dependency**: `pip install ortools>=9.14.0`
+
+**Typical Use Cases:**
+- Large area mapping requiring seamless coverage
+- Minimizing download and storage costs
+- Creating mosaics without coverage gaps
+- Archival-quality data collection
 
 ### Shoreline Extractor
 - Extract shorelines from Sentinel-2 L2A Band 8 (NIR) imagery
@@ -89,7 +110,13 @@ SatShor/
    pip install -r requirements.txt
    ```
 
-4. Configure CDSE credentials:
+4. (Optional) Install optimization dependencies for `coverage_optimal` strategy:
+   ```bash
+   pip install ortools>=9.14.0
+   ```
+   Note: The `coverage_greedy` strategy works without OR-Tools. OR-Tools is only required if you want to use the `coverage_optimal` MILP solver.
+
+5. Configure CDSE credentials:
    Create a `.env` file in the project root with your Copernicus Data Space Ecosystem credentials:
    ```
    CDSE_USERNAME=your_username
@@ -249,12 +276,10 @@ Additional documentation is available in the `docs` directory:
 
 ## Future Enhancements
 
-- Remove from Image Search products with zip size less than ~600 MB (Contain a lot of NoData).
-- Automatic image download per-defined periods (Yearly, Monthly, Weekly, or Custom)
-- Large area auto-selection of entropy-driven full coverage set of images (Geometric Set Cover Problem)
 - Support for additional satellite platforms (Sentinel-1)
 - Time series analysis of shoreline changes
 - Super-resolution close-date/low-cloud image composites
+- Memory efficiency improvements in Shoreline Extractor
 
 ## Open-Issues
 
