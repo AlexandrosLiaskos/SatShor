@@ -250,7 +250,8 @@ Additional documentation is available in the `docs` directory:
 ## Future Enhancements
 
 - Remove from Image Search products with zip size less than ~600 MB (Contain a lot of NoData).
-- Enhanced water detection using Band 8A (865nm)
+- Automatic image download per-defined periods (Yearly, Monthly, Weekly, or Custom)
+- Large area auto-selection of entropy-driven full coverage set of images (Geometric Set Cover Problem)
 - Support for additional satellite platforms (Sentinel-1)
 - Time series analysis of shoreline changes
 - Super-resolution close-date/low-cloud image composites
